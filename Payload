@@ -1,18 +1,19 @@
-import json
+import jwt
 import datetime
-from jose import jws
+import hashlib
 
 # Define the payload
 payload = {
     'username': 'jws-test',
     'entity': 'apex',
-    'datetime': datetime.datetime.utcnow().isoformat()
+    'datetime': str(datetime.datetime.now())
 }
 
-# Define the shared secret (used as the private key)
-shared_secret = '1234567890'
+# Define the secret key
+secret_key = '1234567890'
 
-# Create the JWS
-jws_token = jws.sign(payload, shared_secret, algorithm='HS512')
+# Encode the JWS
+jws = jwt.encode(payload, secret_key, algorithm='HS512')
 
-print(jws_token)
+print("JWS:")
+print(jws)
