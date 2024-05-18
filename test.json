@@ -1,0 +1,873 @@
+{
+    "document": "form removed for brevity",
+    "additionalProperties": false,
+    "title": "new_account_form",
+    "type": "object",
+    "version": 6,
+    "required": [
+        "customerType",
+        "applicants",
+        "applicantSignature",
+        "principalApprover"
+    ],
+    "properties": {
+        "suitabilityProfile": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+                "timeHorizon": {
+                    "enum": [
+                        "SHORT",
+                        "AVERAGE",
+                        "LONGEST"
+                    ]
+                },
+                "liquidityNeeds": {
+                    "enum": [
+                        "VERY_IMPORTANT",
+                        "SOMEWHAT_IMPORTANT",
+                        "NOT_IMPORTANT"
+                    ]
+                }
+            }
+        },
+        "backupWithholding": {
+            "default": "NO",
+            "enum": [
+                "YES",
+                "NO"
+            ]
+        },
+        "catAccountholderType": {
+            "description": "Consolidated Audit Trail Accountholder Type\nA - Institutional Customer - An institutional account as defined in FINRA Rule 4512(c)\nE - Employee Account - An employee or associated person of an Industry Member\nI - Individual Customer - An account that does not meet the definition of FINRA Rule 4512(c) and is also not a proprietary account",
+            "enum": [
+                "A",
+                "E",
+                "I"
+            ]
+        },
+        "accountType": {
+            "description": "for retirement account, MARGIN is not a valid accountType\n",
+            "enum": [
+                "CASH",
+                "MARGIN",
+                "OPTION"
+            ]
+        },
+        "applicants": {
+            "description": "Array of account applicants. The first applicant is considered\nthe primary applicant for all accounts. The second applicant is the\njoint owner for JOINT accounts, or the custodian for CUSTODIAN accounts.\n",
+            "type": "array",
+            "items": {
+                "minItems": 1,
+                "maxItems": 2,
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                    "identity",
+                    "contact",
+                    "disclosures"
+                ],
+                "properties": {
+                    "numDependents": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "identity": {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "required": [
+                            "name",
+                            "dateOfBirth",
+                            "citizenshipCountry"
+                        ],
+                        "properties": {
+                            "visaExpirationDate": {
+                                "format": "date",
+                                "description": "Required when a valid visaType is selected.",
+                                "type": "string",
+                                "example": "2003-04-23"
+                            },
+                            "socialSecurityNumber": {
+                                "format": "ssn",
+                                "description": "social security number with dashes; required for domestic and resident alien persons (domestic -\nperson citizenshipCountry = USA and RA - citizenshipCountry != USA and addressCountry = USA)\n",
+                                "type": "string",
+                                "example": "123-45-6789"
+                            },
+                            "name": {
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                    "givenName",
+                                    "familyName"
+                                ],
+                                "properties": {
+                                    "legalName": {
+                                        "minLength": 1,
+                                        "format": "name_zero",
+                                        "description": "For a joint account, legalName of the primary applicant can be at most 28 characters.\nFor a joint account, legalName of the joint applicant can be at most 21 characters.\nIn all cases, familyName must be included as a substring of legalName.\n",
+                                        "type": "string",
+                                        "maxLength": 30,
+                                        "example": "Elizabeth A M Windsor II"
+                                    },
+                                    "prefix": {
+                                        "minLength": 1,
+                                        "format": "ascii_printable",
+                                        "type": "string",
+                                        "maxLength": 5,
+                                        "example": "HRH"
+                                    },
+                                    "givenName": {
+                                        "minLength": 1,
+                                        "format": "name_zero",
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "Elizabeth"
+                                    },
+                                    "familyName": {
+                                        "minLength": 1,
+                                        "format": "name_zero",
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "Windsor"
+                                    },
+                                    "suffix": {
+                                        "minLength": 1,
+                                        "format": "ascii_printable",
+                                        "type": "string",
+                                        "maxLength": 5,
+                                        "example": "II"
+                                    },
+                                    "additionalNames": {
+                                        "minItems": 1,
+                                        "maxItems": 5,
+                                        "description": "The length of additionalNames.join(\" \") may be no more than 20.\nInitials may be used to work around length restrictions, e.g. [A, M]\n",
+                                        "type": "array",
+                                        "items": {
+                                            "format": "name_zero",
+                                            "type": "string",
+                                            "maxLength": 20
+                                        },
+                                        "example": [
+                                            "Alexandra",
+                                            "Mary"
+                                        ]
+                                    }
+                                }
+                            },
+                            "birthCountry": {
+                                "format": "country-alpha-3",
+                                "description": "ISO 3166-1 alpha-3 (3 letter) country code, in all-caps; this is a required field for Foreign\naccounts (any account with a non US address and citizenshipCountry); also this will be required for resident\nalien accounts (citizenshipCountry != USA but Address Country = USA) when permanentResident = no.\n",
+                                "type": "string",
+                                "example": "DEU"
+                            },
+                            "dateOfBirth": {
+                                "format": "date",
+                                "type": "string",
+                                "example": "2003-04-23"
+                            },
+                            "visaType": {
+                                "description": "This field will be required for resident alien accounts when permanentResident and birthCountry on OFAC = no. If other is selected the account will reject.",
+                                "enum": [
+                                    "E1",
+                                    "E2",
+                                    "E3",
+                                    "F1",
+                                    "G4",
+                                    "H1B",
+                                    "L1",
+                                    "O1",
+                                    "TN1",
+                                    "OTHER"
+                                ],
+                                "example": "E1"
+                            },
+                            "citizenshipCountry": {
+                                "format": "country-alpha-3",
+                                "description": "ISO 3166-1 alpha-3 (3 letter) country code, in all-caps",
+                                "type": "string",
+                                "example": "USA"
+                            },
+                            "permanentResident": {
+                                "description": "This will be a required field for resident alien accounts; citizenshipCountry != USA but Address\nCountry = USA.\n",
+                                "enum": [
+                                    "YES",
+                                    "NO"
+                                ],
+                                "example": "YES"
+                            }
+                        }
+                    },
+                    "contact": {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "required": [
+                            "homeAddress",
+                            "phoneNumbers"
+                        ],
+                        "properties": {
+                            "emailAddresses": {
+                                "description": "emails should be listed in priority order",
+                                "type": "array",
+                                "items": {
+                                    "format": "email",
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "example": "felix_forgetful_enjoys_colossal_words@apexfintechsolutions.com"
+                                },
+                                "example": [
+                                    "felix_forgetful@lofgren.dk"
+                                ]
+                            },
+                            "mailingAddress": {
+                                "description": "mailing address should be provided if homeAddress is not\na physical address (e.g., is a PO Box)\n",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                    "streetAddress",
+                                    "city",
+                                    "country"
+                                ],
+                                "properties": {
+                                    "country": {
+                                        "format": "country-alpha-3",
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "streetAddress": {
+                                        "minItems": 1,
+                                        "maxItems": 3,
+                                        "description": "At most, 3 lines of streetAddress are available. For the custodian (2nd applicant) of\na CUSTODIAN account, only 2 lines are available.\n",
+                                        "type": "array",
+                                        "items": {
+                                            "format": "ascii_printable",
+                                            "type": "string",
+                                            "maxLength": 30
+                                        },
+                                        "example": [
+                                            "107 SE Washington St, Ste 256"
+                                        ]
+                                    },
+                                    "city": {
+                                        "format": "city_name",
+                                        "type": "string",
+                                        "example": "Portland"
+                                    },
+                                    "postalCode": {
+                                        "format": "ascii_printable",
+                                        "description": "required for domestic and resident alien persons (domestic - person citizenshipCountry = USA and RA\n - citizenshipCountry != USA and addressCountry = USA)\n",
+                                        "type": "string",
+                                        "example": "97214"
+                                    },
+                                    "state": {
+                                        "format": "ascii_printable",
+                                        "description": "required for domestic and resident alien persons (domestic - person citizenshipCountry = USA and RA\n- citizenshipCountry != USA and addressCountry = USA)\n",
+                                        "type": "string",
+                                        "example": "OR"
+                                    }
+                                }
+                            },
+                            "phoneNumbers": {
+                                "minItems": 1,
+                                "maxItems": 4,
+                                "description": "phone numbers should be listed in priority order",
+                                "type": "array",
+                                "items": {
+                                    "additionalProperties": false,
+                                    "type": "object",
+                                    "required": [
+                                        "phoneNumber",
+                                        "phoneNumberType"
+                                    ],
+                                    "properties": {
+                                        "phoneNumber": {
+                                            "format": "ascii_printable",
+                                            "type": "string",
+                                            "example": "2148675309"
+                                        },
+                                        "phoneNumberType": {
+                                            "enum": [
+                                                "HOME",
+                                                "WORK",
+                                                "MOBILE",
+                                                "FAX",
+                                                "OTHER"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "example": [
+                                    {
+                                        "phoneNumber": "2148675309",
+                                        "phoneNumberType": "HOME"
+                                    },
+                                    {
+                                        "phoneNumber": "4157672676",
+                                        "phoneNumberType": "MOBILE"
+                                    },
+                                    {
+                                        "phoneNumber": "5035551212",
+                                        "phoneNumberType": "MOBILE"
+                                    }
+                                ]
+                            },
+                            "homeAddress": {
+                                "description": "used for identity check. Also used for mailing if mailingAddress\nis not provided.\n",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                    "streetAddress",
+                                    "city",
+                                    "country"
+                                ],
+                                "properties": {
+                                    "country": {
+                                        "format": "country-alpha-3",
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "streetAddress": {
+                                        "minItems": 1,
+                                        "maxItems": 3,
+                                        "description": "At most, 3 lines of streetAddress are available. For the custodian (2nd applicant) of\na CUSTODIAN account, only 2 lines are available.\n",
+                                        "type": "array",
+                                        "items": {
+                                            "format": "ascii_printable",
+                                            "type": "string",
+                                            "maxLength": 30
+                                        },
+                                        "example": [
+                                            "107 SE Washington St, Ste 256"
+                                        ]
+                                    },
+                                    "city": {
+                                        "format": "city_name",
+                                        "type": "string",
+                                        "example": "Portland"
+                                    },
+                                    "postalCode": {
+                                        "format": "ascii_printable",
+                                        "description": "required for domestic and resident alien persons (domestic - person citizenshipCountry = USA and RA\n - citizenshipCountry != USA and addressCountry = USA)\n",
+                                        "type": "string",
+                                        "example": "97214"
+                                    },
+                                    "state": {
+                                        "format": "ascii_printable",
+                                        "description": "required for domestic and resident alien persons (domestic - person citizenshipCountry = USA and RA\n- citizenshipCountry != USA and addressCountry = USA)\n",
+                                        "type": "string",
+                                        "example": "OR"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "disclosures": {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "required": [
+                            "isPoliticallyExposed",
+                            "isControlPerson"
+                        ],
+                        "properties": {
+                            "companySymbols": {
+                                "description": "ticker symbols of publicly traded companies in which applicant is a control person. Required if\nisControlPerson is YES.\n",
+                                "type": "array",
+                                "items": {
+                                    "format": "ascii_printable",
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "AAPL",
+                                    "GOOG"
+                                ]
+                            },
+                            "isPoliticallyExposed": {
+                                "enum": [
+                                    "YES",
+                                    "NO"
+                                ],
+                                "example": "YES"
+                            },
+                            "isCorrespondentEmployee": {
+                                "description": "Only applicable for BDs:\nIs the account holder an employee of, or affiliated with the introducing broker firm?\n",
+                                "enum": [
+                                    "YES",
+                                    "NO"
+                                ]
+                            },
+                            "isCustodianEmployee": {
+                                "description": "Only applicable for RIAs:\nIs the account holder an employee of, or affiliated with Apex Fintech Solutions?\n",
+                                "enum": [
+                                    "YES",
+                                    "NO"
+                                ]
+                            },
+                            "firmName": {
+                                "format": "ascii_printable",
+                                "description": "provide if and only if isAffiliatedExchangeOrFINRA is YES",
+                                "type": "string"
+                            },
+                            "isControlPerson": {
+                                "description": "Is the account holder a control person of a publicly traded company? (Director, Officer, or 10% Stock Owner)",
+                                "enum": [
+                                    "YES",
+                                    "NO"
+                                ]
+                            },
+                            "isAffiliatedExchangeOrFINRA": {
+                                "description": "is the applicant affiliated with, or an employee of a member firm of a stock exchange or FINRA?\n",
+                                "enum": [
+                                    "YES",
+                                    "NO"
+                                ]
+                            },
+                            "affiliatedApproval": {
+                                "description": "Array of uuids as reference ids of 3210 letter stored through SNAP service.\n",
+                                "type": "array",
+                                "items": {
+                                    "format": "non_blank_string",
+                                    "type": "string"
+                                }
+                            },
+                            "politicalExposureDetail": {
+                                "description": "provide if and only if isPoliticallyExposed is YES",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                    "immediateFamily",
+                                    "politicalOrganization"
+                                ],
+                                "properties": {
+                                    "politicalOrganization": {
+                                        "format": "ascii_printable",
+                                        "description": "name of the related political organization",
+                                        "type": "string",
+                                        "example": "Democratic Party of Oregon"
+                                    },
+                                    "immediateFamily": {
+                                        "description": "names of family members, including former spouses",
+                                        "type": "array",
+                                        "items": {
+                                            "format": "ascii_printable",
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "Fred Flintstone",
+                                            "Wilma Flintstone",
+                                            "Bam Bam Flintstone"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "employment": {
+                        "minItems": 1,
+                        "maxItems": 2,
+                        "description": "employment information optional for the applicant",
+                        "additionalProperties": false,
+                        "type": "object",
+                        "properties": {
+                            "yearsEmployed": {
+                                "type": "number",
+                                "example": 1.5
+                            },
+                            "employer": {
+                                "format": "ascii_printable",
+                                "type": "string"
+                            },
+                            "positionEmployed": {
+                                "format": "ascii_printable",
+                                "type": "string",
+                                "example": "Apex Clearing Corporation"
+                            },
+                            "employmentStatus": {
+                                "description": "Enum for employment statuses",
+                                "enum": [
+                                    "EMPLOYED",
+                                    "RETIRED",
+                                    "STUDENT",
+                                    "UNEMPLOYED",
+                                    "SELF_EMPLOYED"
+                                ]
+                            },
+                            "businessAddress": {
+                                "description": "A physical address. May be a PO Box, Rural Route address, etc. City, state, and postalCode should be provided when possible, and are required when country is USA. For international addresses where they just don't make sense, they can be omitted.",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                    "streetAddress",
+                                    "city",
+                                    "country"
+                                ],
+                                "properties": {
+                                    "country": {
+                                        "format": "country-alpha-3",
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "streetAddress": {
+                                        "minItems": 1,
+                                        "maxItems": 3,
+                                        "description": "At most, 3 lines of streetAddress are available. For the custodian (2nd applicant) of\na CUSTODIAN account, only 2 lines are available.\n",
+                                        "type": "array",
+                                        "items": {
+                                            "format": "ascii_printable",
+                                            "type": "string",
+                                            "maxLength": 30
+                                        },
+                                        "example": [
+                                            "107 SE Washington St, Ste 256"
+                                        ]
+                                    },
+                                    "city": {
+                                        "format": "city_name",
+                                        "type": "string",
+                                        "example": "Portland"
+                                    },
+                                    "postalCode": {
+                                        "format": "ascii_printable",
+                                        "description": "required for domestic and resident alien persons (domestic - person citizenshipCountry = USA and RA\n - citizenshipCountry != USA and addressCountry = USA)\n",
+                                        "type": "string",
+                                        "example": "97214"
+                                    },
+                                    "state": {
+                                        "format": "ascii_printable",
+                                        "description": "required for domestic and resident alien persons (domestic - person citizenshipCountry = USA and RA\n- citizenshipCountry != USA and addressCountry = USA)\n",
+                                        "type": "string",
+                                        "example": "OR"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "maritalStatus": {
+                        "enum": [
+                            "SINGLE",
+                            "MARRIED",
+                            "DIVORCED",
+                            "WIDOWED"
+                        ]
+                    }
+                }
+            }
+        },
+        "principalApprover": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+                "approverName"
+            ],
+            "properties": {
+                "approverName": {
+                    "format": "ascii_printable",
+                    "description": "provide the name of approver",
+                    "type": "string"
+                }
+            }
+        },
+        "customerType": {
+            "enum": [
+                "INDIVIDUAL",
+                "IRA",
+                "JOINT",
+                "CUSTODIAN",
+                "SOLO401K"
+            ]
+        },
+        "fdid": {
+            "minLength": 1,
+            "format": "alphanumeric",
+            "description": "FDIDs are typically generated by Apex and are not required from correspondents",
+            "type": "string",
+            "maxLength": 40,
+            "example": "HFMVSMJSGM2DK"
+        },
+        "registeredRepApprover": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+                "approverName"
+            ],
+            "properties": {
+                "approverName": {
+                    "format": "ascii_printable",
+                    "description": "provide the name of approver",
+                    "type": "string"
+                }
+            }
+        },
+        "trustedContact": {
+            "description": "for personal account, explicitly provide the intent of either including or excluding possibly existing Trusted Contact\n",
+            "enum": [
+                "INCLUDE",
+                "EXCLUDE"
+            ]
+        },
+        "serviceProfile": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+                "sweepInstructions": {
+                    "enum": [
+                        "SWEEP",
+                        "NO_SWEEP"
+                    ]
+                },
+                "householdingService": {
+                    "default": "NO",
+                    "enum": [
+                        "YES",
+                        "NO"
+                    ]
+                },
+                "dividendReinvestment": {
+                    "default": "DO_NOT_REINVEST",
+                    "enum": [
+                        "REINVEST",
+                        "DO_NOT_REINVEST"
+                    ]
+                },
+                "dividendProceedsSendFrequency": {
+                    "description": "required if dividendProceeds is SEND; ignored if dividendProceeds is HOLD",
+                    "enum": [
+                        "DAILY",
+                        "WEEKLY",
+                        "MONTHLY"
+                    ]
+                },
+                "securitySaleProceeds": {
+                    "description": "SEND cannot be selected if sweepInstructions = SWEEP",
+                    "enum": [
+                        "HOLD",
+                        "SEND"
+                    ]
+                },
+                "issuerDirectCommunication": {
+                    "enum": [
+                        "OBJECT",
+                        "ACCEPT"
+                    ]
+                },
+                "dividendProceeds": {
+                    "enum": [
+                        "HOLD",
+                        "SEND"
+                    ]
+                }
+            }
+        },
+        "largeTraderIdRecords": {
+            "maxItems": 15,
+            "description": "Large Trader ID Records\nA “large trader\" is defined as a person whose transactions in NMS securities\n(equity securities and standardized options) equal or exceed 2 million shares or $20 million\nduring any calendar day, or 20 million shares or $200 million during any calendar month.\nLarge traders must identify themselves to the SEC and make certain disclosures. The SEC then\nassigns a Large Trader ID. Large Trader ID Records track the Large Trader IDs associated with\nan Apex account.\n   \n   ",
+            "type": "array",
+            "items": {
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "endDate": {
+                        "format": "date",
+                        "description": "Date the LTID became no longer valid (if applicable). Defaults to the current date if not provided.",
+                        "type": "string",
+                        "example": "2003-04-23"
+                    },
+                    "endReason": {
+                        "description": "Reason the LTID became no longer valid (if applicable)",
+                        "enum": [
+                            "CORRECTION",
+                            "ENDED",
+                            "REPLACED",
+                            "OTHER"
+                        ]
+                    },
+                    "id": {
+                        "format": "large_trader_id",
+                        "description": "SEC-assigned identifier, also known as LTID",
+                        "type": "string",
+                        "example": "12345678-1234"
+                    },
+                    "effectiveDate": {
+                        "format": "date",
+                        "description": "Date the LTID became valid. Defaults to the current date if not provided.",
+                        "type": "string",
+                        "example": "2003-04-23"
+                    }
+                },
+                "dependencies": {
+                    "endDate": [
+                        "endReason"
+                    ]
+                }
+            }
+        },
+        "investmentProfile": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+                "totalNetWorthUSD": {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                        "min",
+                        "max"
+                    ],
+                    "properties": {
+                        "min": {
+                            "type": "integer"
+                        },
+                        "max": {
+                            "type": "integer"
+                        }
+                    },
+                    "example": {
+                        "min": 100001,
+                        "max": 200000
+                    }
+                },
+                "investmentExperience": {
+                    "enum": [
+                        "NONE",
+                        "LIMITED",
+                        "GOOD",
+                        "EXTENSIVE"
+                    ],
+                    "example": "GOOD"
+                },
+                "riskTolerance": {
+                    "enum": [
+                        "LOW",
+                        "MEDIUM",
+                        "HIGH"
+                    ]
+                },
+                "investmentObjective": {
+                    "enum": [
+                        "GROWTH_INCOME",
+                        "GROWTH",
+                        "INCOME",
+                        "CAPITAL_PRESERVATION",
+                        "SPECULATION",
+                        "MAXIMUM_GROWTH",
+                        "BALANCED",
+                        "OTHER"
+                    ]
+                },
+                "annualIncomeUSD": {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                        "min",
+                        "max"
+                    ],
+                    "properties": {
+                        "min": {
+                            "type": "integer"
+                        },
+                        "max": {
+                            "type": "integer"
+                        }
+                    },
+                    "example": {
+                        "min": 50001,
+                        "max": 100000
+                    }
+                },
+                "federalTaxBracketPercent": {
+                    "type": "number",
+                    "example": 39.6
+                },
+                "liquidNetWorthUSD": {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                        "min",
+                        "max"
+                    ],
+                    "properties": {
+                        "min": {
+                            "type": "integer"
+                        },
+                        "max": {
+                            "type": "integer"
+                        }
+                    },
+                    "example": {
+                        "min": 100001,
+                        "max": 200000
+                    }
+                }
+            }
+        },
+        "largeTraderId": {
+            "format": "large_trader_id",
+            "description": "Large Trader ID (deprecated: use large_trader_id_records)\nA “large trader\" is defined as a person whose transactions in NMS securities\n(equity securities and standardized options) equal or exceed 2 million shares or $20 million\nduring any calendar day, or 20 million shares or $200 million during any calendar month.\nLarge traders must identify themselves to the SEC and make certain disclosures. The SEC then\nassigns a Large Trader ID.",
+            "type": "string",
+            "example": "12345678-1234"
+        },
+        "applicantSignature": {
+            "oneOf": [
+                {
+                    "additionalProperties": false,
+                    "type": "object",
+                    "required": [
+                        "eSigned"
+                    ],
+                    "properties": {
+                        "eSigned": {
+                            "enum": [
+                                "YES",
+                                "NO"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "oneOf": [
+                        {
+                            "additionalProperties": false,
+                            "type": "object",
+                            "required": [
+                                "imageSource"
+                            ],
+                            "properties": {
+                                "imageSource": {
+                                    "enum": [
+                                        "DOC_IMAGING"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "additionalProperties": false,
+                            "type": "object",
+                            "required": [
+                                "imageSource",
+                                "imageReference",
+                                "photoIdReference"
+                            ],
+                            "properties": {
+                                "imageSource": {
+                                    "enum": [
+                                        "SNAP"
+                                    ]
+                                },
+                                "photoIdReference": {
+                                    "format": "non_blank_string",
+                                    "description": "uuid as reference id of photo ID image stored through SNAP service.\n",
+                                    "type": "string"
+                                },
+                                "imageReference": {
+                                    "format": "non_blank_string",
+                                    "description": "uuid as reference id of signature image stored through SNAP service.\n",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
