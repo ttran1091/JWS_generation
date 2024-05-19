@@ -1,0 +1,155 @@
+{
+    "document": "form removed for brevity",
+    "additionalProperties": false,
+    "title": "new_account_form",
+    "type": "object",
+    "version": 6,
+    "required": [
+        "customerType",
+        "applicants",
+        "applicantSignature"
+    ],
+    "properties": {
+        "customerType": {
+            "enum": [
+                "INDIVIDUAL"
+            ]
+        },
+        "applicants": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "identity",
+                    "contact",
+                    "disclosures"
+                ],
+                "properties": {
+                    "identity": {
+                        "type": "object",
+                        "required": [
+                            "name",
+                            "dateOfBirth",
+                            "citizenshipCountry"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "object",
+                                "required": [
+                                    "givenName",
+                                    "familyName"
+                                ],
+                                "properties": {
+                                    "givenName": {
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "familyName": {
+                                        "type": "string",
+                                        "example": "Doe"
+                                    }
+                                }
+                            },
+                            "dateOfBirth": {
+                                "type": "string",
+                                "example": "2003-04-23"
+                            },
+                            "citizenshipCountry": {
+                                "type": "string",
+                                "example": "USA"
+                            }
+                        }
+                    },
+                    "contact": {
+                        "type": "object",
+                        "required": [
+                            "homeAddress",
+                            "phoneNumbers"
+                        ],
+                        "properties": {
+                            "homeAddress": {
+                                "type": "object",
+                                "required": [
+                                    "streetAddress",
+                                    "city",
+                                    "country"
+                                ],
+                                "properties": {
+                                    "streetAddress": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "maxLength": 30,
+                                            "example": "123 Main St"
+                                        }
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "Anytown"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "example": "USA"
+                                    }
+                                }
+                            },
+                            "phoneNumbers": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "required": [
+                                        "phoneNumber",
+                                        "phoneNumberType"
+                                    ],
+                                    "properties": {
+                                        "phoneNumber": {
+                                            "type": "string",
+                                            "example": "123-456-7890"
+                                        },
+                                        "phoneNumberType": {
+                                            "enum": [
+                                                "HOME"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "disclosures": {
+                        "type": "object",
+                        "required": [
+                            "isPoliticallyExposed",
+                            "isControlPerson"
+                        ],
+                        "properties": {
+                            "isPoliticallyExposed": {
+                                "enum": [
+                                    "NO"
+                                ]
+                            },
+                            "isControlPerson": {
+                                "enum": [
+                                    "NO"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "applicantSignature": {
+            "type": "object",
+            "required": [
+                "eSigned"
+            ],
+            "properties": {
+                "eSigned": {
+                    "enum": [
+                        "YES"
+                    ]
+                }
+            }
+        }
+    }
+}
